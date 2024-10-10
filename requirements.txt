@@ -1,3 +1,2 @@
 taipy
 qrcode
-PIL
