@@ -1,5 +1,3 @@
 taipy
-<<<<<<< HEAD
 qrcode
-=======
->>>>>>> 0d21eaf95b20d3e792c46f708dbca28d73f3161c
+PIL
