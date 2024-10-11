@@ -1,2 +1,3 @@
 # IHPUSA_Product_Calculator
 IHPUSA_Product_
+taipy run Taipy_Cost_per_Ounce_Profit.py

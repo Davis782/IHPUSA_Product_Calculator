@@ -1,0 +1,5 @@
+{
+    "name": "Taipy_Cost_per_Ounce_Profit",
+    "type": "app",
+    "entry_point": "Taipy_Cost_per_Ounce_Profit.py"
+}
