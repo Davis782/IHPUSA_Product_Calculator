@@ -1,11 +1,11 @@
 [
     {
-        "label": "os",
+        "label": "taipy",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "os",
-        "description": "os",
-        "detail": "os",
+        "importPath": "taipy",
+        "description": "taipy",
+        "detail": "taipy",
         "documentation": {}
     },
     {
@@ -17,105 +17,20 @@
         "documentation": {}
     },
     {
-        "label": "Flask",
-        "importPath": "flask",
-        "description": "flask",
-        "isExtraImport": true,
-        "detail": "flask",
-        "documentation": {}
-    },
-    {
-        "label": "send_file",
-        "importPath": "flask",
-        "description": "flask",
-        "isExtraImport": true,
-        "detail": "flask",
-        "documentation": {}
-    },
-    {
-        "label": "CORS",
-        "importPath": "flask_cors",
-        "description": "flask_cors",
-        "isExtraImport": true,
-        "detail": "flask_cors",
-        "documentation": {}
-    },
-    {
-        "label": "qrcode",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "qrcode",
-        "description": "qrcode",
-        "detail": "qrcode",
-        "documentation": {}
-    },
-    {
-        "label": "StyledPilImage",
-        "importPath": "qrcode.image.styledpil",
-        "description": "qrcode.image.styledpil",
-        "isExtraImport": true,
-        "detail": "qrcode.image.styledpil",
-        "documentation": {}
-    },
-    {
-        "label": "GappedSquareModuleDrawer",
-        "importPath": "qrcode.image.styles.moduledrawers",
-        "description": "qrcode.image.styles.moduledrawers",
-        "isExtraImport": true,
-        "detail": "qrcode.image.styles.moduledrawers",
-        "documentation": {}
-    },
-    {
-        "label": "ProductCostCalculator",
-        "kind": 6,
+        "label": "calculate",
+        "kind": 2,
         "importPath": "Taipy_Cost_per_Ounce_Profit",
         "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "class ProductCostCalculator:\n    def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):\n        self.cost_product1 = cost_product1\n        self.cost_product2 = cost_product2\n        self.cost_product3 = cost_product3\n        self.labor_cost_per_hour = labor_cost_per_hour\n        self.cost_cbd_per_ounce = cost_cbd_per_ounce\n    def calculate_cost_per_ounce(self, cbd_calculation, total_ounces):\n        gallons = total_ounces / 128  # Calculate the number of gallons\n        total_cost_product1 = gallons * (30 / 32) * self.cost_product1",
+        "peekOfCode": "def calculate(state):\n    # Get the input values\n    input_values['cost_product1'] = state.cost_product1\n    input_values['cost_product2'] = state.cost_product2\n    input_values['cost_product3'] = state.cost_product3\n    input_values['labor_cost_per_hour'] = state.labor_cost_per_hour\n    input_values['cost_cbd_per_ounce'] = state.cost_cbd_per_ounce\n    input_values['wholesale_markup'] = state.wholesale_markup\n    input_values['retail_markup'] = state.retail_markup\n    input_values['total_ounces'] = state.total_ounces",
         "detail": "Taipy_Cost_per_Ounce_Profit",
         "documentation": {}
     },
     {
-        "label": "serve_pdf",
-        "kind": 2,
+        "label": "input_values",
+        "kind": 5,
         "importPath": "Taipy_Cost_per_Ounce_Profit",
         "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "def serve_pdf():\n    return send_file(r'C:\\Users\\Solid\\OneDrive\\Documents\\GitHub\\AI_Claude_OpenSource\\pdf\\IHPUSA_COA.pdf', as_attachment=False)\n@app.route(\"/warning\")\ndef serve_warning():\n    return gui.get_page(\"warning\")\n# Create a warning page\nwarning_page = \"\"\"\n# IHPUSA Product Warning QR Code\nScan this QR code to view the product warning information.\n## Product Warning",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "serve_warning",
-        "kind": 2,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "def serve_warning():\n    return gui.get_page(\"warning\")\n# Create a warning page\nwarning_page = \"\"\"\n# IHPUSA Product Warning QR Code\nScan this QR code to view the product warning information.\n## Product Warning\n* **WARNING:** KEEP OUT OF REACH OF CHILDREN AND PETS and don't use on FINISHED FLOOR SURFACES ex. CERAMIC TILE.\n* **EYE IRRITANTS:** Avoid contact with eyes. If eye contact occurs, rinse with water. If irritation persists, contact a physician.\n## Instructions",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "index",
-        "kind": 2,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "def index():\n    return redirect(url_for(\"serve_nav\"))\n# Serve the navigation menu\n@app.route(\"/nav\")\ndef serve_nav():\n    return gui.get_page(\"nav\")\n# Define the ProductCostCalculator class\nclass ProductCostCalculator:\n    def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):\n        self.cost_product1 = cost_product1",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "serve_nav",
-        "kind": 2,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "def serve_nav():\n    return gui.get_page(\"nav\")\n# Define the ProductCostCalculator class\nclass ProductCostCalculator:\n    def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):\n        self.cost_product1 = cost_product1\n        self.cost_product2 = cost_product2\n        self.cost_product3 = cost_product3\n        self.labor_cost_per_hour = labor_cost_per_hour\n        self.cost_cbd_per_ounce = cost_cbd_per_ounce",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "calculate_cost",
-        "kind": 2,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "def calculate_cost(gallons, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):\n    total_ounces = gallons * 128  # 1 gallon = 128 ounces\n    calculator = ProductCostCalculator(\n        cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce)\n    result = calculator.calculate_cost_per_ounce(\n        True, total_ounces)  # Assuming CBD calculation is true\n    # Update the GUI with results\n    return {\n        'total_cost_per_ounce': result['total_cost_per_ounce'],\n        'total_cost_manufacturing': result['total_cost_manufacturing'],",
+        "peekOfCode": "input_values = {\n    'cost_product1': 0,\n    'cost_product2': 0,\n    'cost_product3': 0,\n    'labor_cost_per_hour': 0,\n    'cost_cbd_per_ounce': 0,\n    'wholesale_markup': 0,\n    'retail_markup': 0,\n    'total_ounces': 0,\n    'ounces_per_bottle': 0,",
         "detail": "Taipy_Cost_per_Ounce_Profit",
         "documentation": {}
     },
@@ -124,52 +39,7 @@
         "kind": 5,
         "importPath": "Taipy_Cost_per_Ounce_Profit",
         "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "gui = Gui(\"<|This Page is meant to give access to the COA of the CBD offered, and subject to change without notice depending on the harvest season.|>\")\nnav_menu = \"\"\"\n# Navigation Menu\n* [COA Page](/pdf)\n* [Warning/Directions Page](/warning)\n* [Cost Calculator](/calculator)\n* [Survey](https://docs.google.com/forms/d/e/1FAIpQLSeFQwgFouHuj6qauAXjab5po0jKMM030eiOLi0gKuxtTtGUHw/viewform)\n\"\"\"\n# Add the navigation menu to the GUI\ngui.add_page(\"nav\", nav_menu)",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "nav_menu",
-        "kind": 5,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "nav_menu = \"\"\"\n# Navigation Menu\n* [COA Page](/pdf)\n* [Warning/Directions Page](/warning)\n* [Cost Calculator](/calculator)\n* [Survey](https://docs.google.com/forms/d/e/1FAIpQLSeFQwgFouHuj6qauAXjab5po0jKMM030eiOLi0gKuxtTtGUHw/viewform)\n\"\"\"\n# Add the navigation menu to the GUI\ngui.add_page(\"nav\", nav_menu)\n# Define the Markdown content of the COA page",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "pdf_page",
-        "kind": 5,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "pdf_page = \"\"\"\n# COA Page can be gotten at link below\nYou can view the COA at the following link and download: [here](http://ai-claude-opensource.onrender.com/pdf/IHPUSA_COA.pdf).\n\"\"\"\n# Add the COA page to the GUI\ngui.add_page(\"pdf\", pdf_page)\n# Create a Flask app to serve the PDF\napp = Flask(__name__)\nCORS(app)\n@app.route(\"/pdf\")",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "app",
-        "kind": 5,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "app = Flask(__name__)\nCORS(app)\n@app.route(\"/pdf\")\ndef serve_pdf():\n    return send_file(r'C:\\Users\\Solid\\OneDrive\\Documents\\GitHub\\AI_Claude_OpenSource\\pdf\\IHPUSA_COA.pdf', as_attachment=False)\n@app.route(\"/warning\")\ndef serve_warning():\n    return gui.get_page(\"warning\")\n# Create a warning page\nwarning_page = \"\"\"",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "warning_page",
-        "kind": 5,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "warning_page = \"\"\"\n# IHPUSA Product Warning QR Code\nScan this QR code to view the product warning information.\n## Product Warning\n* **WARNING:** KEEP OUT OF REACH OF CHILDREN AND PETS and don't use on FINISHED FLOOR SURFACES ex. CERAMIC TILE.\n* **EYE IRRITANTS:** Avoid contact with eyes. If eye contact occurs, rinse with water. If irritation persists, contact a physician.\n## Instructions\n* Do not spray on or permit contact with fabrics, painted surfaces, or finished surfaces.\n* Do not spray in automobiles or in confined areas.\n* Shake well before using.",
-        "detail": "Taipy_Cost_per_Ounce_Profit",
-        "documentation": {}
-    },
-    {
-        "label": "calculator_page",
-        "kind": 5,
-        "importPath": "Taipy_Cost_per_Ounce_Profit",
-        "description": "Taipy_Cost_per_Ounce_Profit",
-        "peekOfCode": "calculator_page = \"\"\"\n# Product Cost Calculator\n## Input Values\n* Cost of Product 1: <|cost_product1|>\n* Cost of Product 2: <|cost_product2|>\n* Cost of Product 3: <|cost_product3|>\n* Labor Cost per Hour: <|labor_cost_per_hour|>\n* Cost of CBD per Ounce: <|cost_cbd_per_ounce|>\n## Total Gallons: <|gallons|>\n## Total Ounces: <|total_ounces|>",
+        "peekOfCode": "gui = Gui(page=\"# Cost Calculator\")\n# Define the input fields\ngui.add_input_field(\"cost_product1\", \"Cost of Product 1\",\n                    input_values['cost_product1'])\ngui.add_input_field(\"cost_product2\", \"Cost of Product 2\",\n                    input_values['cost_product2'])\ngui.add_input_field(\"cost_product3\", \"Cost of Product 3\",\n                    input_values['cost_product3'])\ngui.add_input_field(\"labor_cost_per_hour\", \"Labor Cost per Hour\",\n                    input_values['labor_cost_per_hour'])",
         "detail": "Taipy_Cost_per_Ounce_Profit",
         "documentation": {}
     }
