@@ -1,4 +1,3 @@
-os>=<latest_version>
 taipy>=<latest_version>
 qrcode
 Pillow
