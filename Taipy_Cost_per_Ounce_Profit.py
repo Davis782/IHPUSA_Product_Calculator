@@ -1,4 +1,5 @@
-from taipy.gui import Gui
+import streamlit as st
+
 
 class ProductCostCalculator:
     def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):
@@ -19,10 +20,12 @@ class ProductCostCalculator:
 
         total_cost_cbd = total_ounces * self.cost_cbd_per_ounce if cbd_calculation else 0
 
-        total_cost_manufacturing = total_cost_product1 + total_cost_product2 + total_cost_product3 + total_labor_cost
+        total_cost_manufacturing = total_cost_product1 + \
+            total_cost_product2 + total_cost_product3 + total_labor_cost
         total_cost_distribution = total_labor_cost + total_cost_cbd
 
-        total_cost_per_ounce = (total_cost_manufacturing + total_cost_distribution) / total_ounces
+        total_cost_per_ounce = (
+            total_cost_manufacturing + total_cost_distribution) / total_ounces
 
         return {
             'total_cost_per_ounce': total_cost_per_ounce,
@@ -36,8 +39,10 @@ class ProductCostCalculator:
             'total_cost_distribution': total_cost_distribution,
         }
 
+
 def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces):
-    wholesale_price = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
+    wholesale_price = result['total_cost_per_ounce'] * \
+        (1 + wholesale_markup / 100)
     retail_price = wholesale_price * (1 + retail_markup / 100)
     total_profit = (retail_price * total_ounces) - result['total_cost']
 
@@ -52,78 +57,65 @@ def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_
         'total_profit': total_profit,
     }
 
-# Taipy GUI setup
-gui = Gui(page="""
-# Cost Calculator
+# Streamlit app
 
-## Input Values
-* Cost of Product 1: <|cost_product1|>
-* Cost of Product 2: <|cost_product2|>
-* Cost of Product 3: <|cost_product3|>
-* Labor Cost per Hour: <|labor_cost_per_hour|>
-* Cost of CBD per Ounce: <|cost_cbd_per_ounce|>
-* Total Ounces: <|total_ounces|>
 
-## CBD Options
-* Calculate cost per ounce with CBD: <|cbd_with|>
-* Calculate cost per ounce without CBD: <|cbd_without|>
+def main():
+    st.title("Product Cost Calculator")
 
-## Actions
-<|Calculate|button|on_action=calculate|>
-<|Modify Input Values|button|on_action=modify_input_values|>
+    # Input values
+    cost_product1 = st.number_input("Cost of Product 1 ($)", value=5.0)
+    cost_product2 = st.number_input("Cost of Product 2 ($)", value=6.0)
+    cost_product3 = st.number_input("Cost of Product 3 ($)", value=9.0)
+    labor_cost_per_hour = st.number_input(
+        "Labor Cost per Hour ($)", value=15.0)
+    cost_cbd_per_ounce = st.number_input(
+        "Cost of CBD per Ounce ($)", value=0.326)
+    total_ounces = st.number_input("Total Ounces", value=128)
 
-## Results
-* Total Cost: <|total_cost|>
-* Cost per Ounce: <|total_cost_per_ounce|>
-* Wholesale Price: <|wholesale_price|>
-* Retail Price: <|retail_price|>
-* Total Profit: <|total_profit|>
-* Distributor Profit: <|distributor_profit|>
-* Manufacturer Profit: <|manufacturer_profit|>
-* Retailer Profit: <|retailer_profit|>
-""")
+    # CBD Options
+    cbd_choice = st.radio("Calculate cost per ounce with CBD?", ("Yes", "No"))
 
-def calculate(state):
-    # Extract input values from the state
-    input_values = {
-        'cost_product1': state.cost_product1,
-        'cost_product2': state.cost_product2,
-        'cost_product3': state.cost_product3,
-        'labor_cost_per_hour': state.labor_cost_per_hour,
-        'cost_cbd_per_ounce': state.cost_cbd_per_ounce,
-        'total_ounces': state.total_ounces,
-    }
+    # Calculate button
+    if st.button("Calculate"):
+        calculator = ProductCostCalculator(
+            cost_product1,
+            cost_product2,
+            cost_product3,
+            labor_cost_per_hour,
+            cost_cbd_per_ounce
+        )
 
-    # Determine if CBD should be included in the calculation
-    cbd_calculation = state.cbd_with
+        result = calculator.calculate_cost_per_ounce(
+            cbd_choice == "Yes", total_ounces)
 
-    # Calculate costs and profits
-    calculator = ProductCostCalculator(**input_values)
-    result = calculator.calculate_cost_per_ounce(cbd_calculation=cbd_calculation, total_ounces=input_values['total_ounces'])
+        # Display results
+        st.subheader("Calculation Results")
+        st.write(
+            f"Total cost to produce {total_ounces:.1f} ounces: ${result['total_cost']:.2f}")
+        st.write(f"Cost per ounce: ${result['total_cost_per_ounce']:.2f}")
+        st.write(
+            f"Total Manufacturing Dept cost: ${result['total_cost_manufacturing']:.2f}")
+        st.write(
+            f"Total Distribution Dept cost: ${result['total_cost_distribution']:.2f}")
 
-    wholesale_markup = 20  # Assuming a default wholesale markup of 20%
-    retail_markup = 30  # Assuming a default retail markup of 30%
+        # Markup inputs
+        wholesale_markup = st.number_input("Wholesale Markup (%)", value=20.0)
+        retail_markup = st.number_input("Retail Markup (%)", value=30.0)
 
-    wholesale_price, retail_price, profit = calculate_prices_and_profits(result, wholesale_markup, retail_markup, input_values['total_ounces'])
+        # Calculate prices and profits
+        wholesale_price, retail_price, profit = calculate_prices_and_profits(
+            result, wholesale_markup, retail_markup, total_ounces)
 
-    # Update state with results
-    state.total_cost = result['total_cost']
-    state.total_cost_per_ounce = result['total_cost_per_ounce']
-    state.wholesale_price = wholesale_price
-    state.retail_price = retail_price
-    state.total_profit = profit['total_profit']
-    state.distributor_profit = profit['distributor_profit']
-    state.manufacturer_profit = profit['manufacturer_profit']
-    state.retailer_profit = profit['retailer_profit']
+        # Display profit report
+        st.subheader("Profit Report")
+        st.write(f"Wholesale price: ${wholesale_price:.2f}")
+        st.write(f"Retail price: ${retail_price:.2f}")
+        st.write(f"Total profit: ${profit['total_profit']:.2f}")
+        st.write(f"Distributor profit: ${profit['distributor_profit']:.2f}")
+        st.write(f"Manufacturer profit: ${profit['manufacturer_profit']:.2f}")
+        st.write(f"Retailer profit: ${profit['retailer_profit']:.2f}")
 
-def modify_input_values(state):
-    # This function allows users to modify input values
-    state.cost_product1 = float(input("Enter new value for Cost of Product 1: "))
-    state.cost_product2 = float(input("Enter new value for Cost of Product 2: "))
-    state.cost_product3 = float(input("Enter new value for Cost of Product 3: "))
-    state.labor_cost_per_hour = float(input("Enter new value for Labor Cost per Hour: "))
-    state.cost_cbd_per_ounce = float(input("Enter new value for Cost of CBD per Ounce: "))
-    state.total_ounces = float(input("Enter new value for Total Ounces: "))
 
 if __name__ == "__main__":
-    gui.run(host="0.0.0.0", port=5000)
+    main()
