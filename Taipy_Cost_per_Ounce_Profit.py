@@ -35,6 +35,21 @@ gui = Gui(page="""
 
 ## Actions
 <|Calculate|button|on_action=calculate|>
+
+## Results
+* Total Cost: <|total_cost|>
+* Cost per Ounce Manufacturing: <|cost_per_ounce_manufacturing|>
+* Cost per Ounce Distribution: <|cost_per_ounce_distribution|>
+* Total Cost per Ounce: <|total_cost_per_ounce|>
+* Wholesale Price: <|wholesale_price|>
+* Retail Price: <|retail_price|>
+* Total Profit: <|total_profit|>
+* Distributor Profit: <|distributor_profit|>
+* Manufacturer Profit: <|manufacturer_profit|>
+* Retailer Profit: <|retailer_profit|>
+* Distributor Profit per Ounce: <|distributor_profit_per_ounce|>
+* Manufacturer Profit per Ounce: <|manufacturer_profit_per_ounce|>
+* Retailer Profit per Ounce: <|retailer_profit_per_ounce|>
 """)
 
 # Define the calculate function
@@ -72,37 +87,20 @@ def calculate(state):
     manufacturer_profit_per_ounce = profit['manufacturer_profit'] / input_values['total_ounces']
     retailer_profit_per_ounce = profit['retailer_profit'] / input_values['total_ounces']
 
-    # Return the results
-    return {
-        'total_cost': result['total_cost'],
-        'cost_per_ounce_manufacturing': result['cost_per_ounce_manufacturing'],
-        'cost_per_ounce_distribution': result['cost_per_ounce_distribution'],
-        'total_cost_per_ounce': result['total_cost_per_ounce'],
-        'wholesale_price': wholesale_price,
-        'retail_price': retail_price,
-        'total_profit': profit['total_profit'],
-        'distributor_profit': profit['distributor_profit'],
-        'manufacturer_profit': profit['manufacturer_profit'],
-        'retailer_profit': profit['retailer_profit'],
-        'distributor_profit_per_ounce': distributor_profit_per_ounce,
-        'manufacturer_profit_per_ounce': manufacturer_profit_per_ounce,
-        'retailer_profit_per_ounce': retailer_profit_per_ounce
-    }
-
-# Define the output fields
-gui.add_output_field("total_cost", "Total Cost")
-gui.add_output_field("cost_per_ounce_manufacturing", "Cost per Ounce Manufacturing")
-gui.add_output_field("cost_per_ounce_distribution", "Cost per Ounce Distribution")
-gui.add_output_field("total_cost_per_ounce", "Total Cost per Ounce")
-gui.add_output_field("wholesale_price", "Wholesale Price")
-gui.add_output_field("retail_price", "Retail Price")
-gui.add_output_field("total_profit", "Total Profit")
-gui.add_output_field("distributor_profit", "Distributor Profit")
-gui.add_output_field("manufacturer_profit", "Manufacturer Profit")
-gui.add_output_field("retailer_profit", "Retailer Profit")
-gui.add_output_field("distributor_profit_per_ounce", "Distributor Profit per Ounce")
-gui.add_output_field("manufacturer_profit_per_ounce", "Manufacturer Profit per Ounce")
-gui.add_output_field("retailer_profit_per_ounce", "Retailer Profit per Ounce")
+    # Update the state with the results
+    state.total_cost = result['total_cost']
+    state.cost_per_ounce_manufacturing = result['cost_per_ounce_manufacturing']
+    state.cost_per_ounce_distribution = result['cost_per_ounce_distribution']
+    state.total_cost_per_ounce = result['total_cost_per_ounce']
+    state.wholesale_price = wholesale_price
+    state.retail_price = retail_price
+    state.total_profit = profit['total_profit']
+    state.distributor_profit = profit['distributor_profit']
+    state.manufacturer_profit = profit['manufacturer_profit']
+    state.retailer_profit = profit['retailer_profit']
+    state.distributor_profit_per_ounce = distributor_profit_per_ounce
+    state.manufacturer_profit_per_ounce = manufacturer_profit_per_ounce
+    state.retailer_profit_per_ounce = retailer_profit_per_ounce
 
 # Run the Taipy GUI
 if __name__ == '__main__':
