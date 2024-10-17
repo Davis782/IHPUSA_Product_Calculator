@@ -108,5 +108,9 @@ gui.add_output_field("manufacturer_profit_per_ounce", "Manufacturer Profit per O
 gui.add_output_field("retailer_profit_per_ounce", "Retailer Profit per Ounce")
 
 # Run the Taipy GUI
-if __name__ == "__main__":
-    gui.run()
+if __name__ == '__main__':
+    import threading
+    # Start Flask server in a separate thread
+    threading.Thread(target=lambda: app.run(host="0.0.0.0", port=5001)).start()
+    port = int(os.environ.get("PORT", 5000))
+    gui.run(host="0.0.0.0", port=port)
