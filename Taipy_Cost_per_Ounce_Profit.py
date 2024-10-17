@@ -1,5 +1,8 @@
+import os
 import taipy as tp
 from taipy.gui import Gui
+from flask import Flask, send_file, redirect, url_for
+from flask_cors import CORS
 
 # Define the input values as a state variable
 input_values = {
@@ -101,6 +104,14 @@ def calculate(state):
     state.distributor_profit_per_ounce = distributor_profit_per_ounce
     state.manufacturer_profit_per_ounce = manufacturer_profit_per_ounce
     state.retailer_profit_per_ounce = retailer_profit_per_ounce
+
+# Create a Flask app to serve the PDF
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/")
+def index():
+    return "Welcome to the Cost Calculator!"
 
 # Run the Taipy GUI
 if __name__ == '__main__':
