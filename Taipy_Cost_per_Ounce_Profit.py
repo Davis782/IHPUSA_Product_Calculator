@@ -1,25 +1,58 @@
-import os
-import taipy as tp
 from taipy.gui import Gui
-from flask import Flask, send_file, redirect, url_for
-from flask_cors import CORS
 
-# Define the input values as a state variable
-input_values = {
-    'cost_product1': 0,
-    'cost_product2': 0,
-    'cost_product3': 0,
-    'labor_cost_per_hour': 0,
-    'cost_cbd_per_ounce': 0,
-    'wholesale_markup': 0,
-    'retail_markup': 0,
-    'total_ounces': 0,
-    'ounces_per_bottle': 0,
-    'bottles': 0,
-    'cbd_choice': '1'
-}
+class ProductCostCalculator:
+    def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):
+        self.cost_product1 = cost_product1
+        self.cost_product2 = cost_product2
+        self.cost_product3 = cost_product3
+        self.labor_cost_per_hour = labor_cost_per_hour
+        self.cost_cbd_per_ounce = cost_cbd_per_ounce
 
-# Define the Taipy GUI layout using Markdown-like syntax
+    def calculate_cost_per_ounce(self, cbd_calculation, total_ounces):
+        gallons = total_ounces / 128  # Calculate the number of gallons
+        total_cost_product1 = gallons * (30 / 32) * self.cost_product1
+        total_cost_product2 = gallons * (30 / 32) * self.cost_product2
+        total_cost_product3 = gallons * (2 / 4) * self.cost_product3
+
+        time_to_produce = total_ounces / 60  # Assuming 60 ounces per hour
+        total_labor_cost = time_to_produce * self.labor_cost_per_hour
+
+        total_cost_cbd = total_ounces * self.cost_cbd_per_ounce if cbd_calculation else 0
+
+        total_cost_manufacturing = total_cost_product1 + total_cost_product2 + total_cost_product3 + total_labor_cost
+        total_cost_distribution = total_labor_cost + total_cost_cbd
+
+        total_cost_per_ounce = (total_cost_manufacturing + total_cost_distribution) / total_ounces
+
+        return {
+            'total_cost_per_ounce': total_cost_per_ounce,
+            'total_cost': total_cost_manufacturing + total_cost_distribution,
+            'total_cost_product1': total_cost_product1,
+            'total_cost_product2': total_cost_product2,
+            'total_cost_product3': total_cost_product3,
+            'total_labor_cost': total_labor_cost,
+            'total_cost_cbd': total_cost_cbd,
+            'total_cost_manufacturing': total_cost_manufacturing,
+            'total_cost_distribution': total_cost_distribution,
+        }
+
+def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces):
+    wholesale_price = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
+    retail_price = wholesale_price * (1 + retail_markup / 100)
+    total_profit = (retail_price * total_ounces) - result['total_cost']
+
+    distributor_profit = total_profit / 2
+    manufacturer_profit = total_profit / 2
+    retailer_profit = (retail_price - wholesale_price) * total_ounces
+
+    return wholesale_price, retail_price, {
+        'distributor_profit': distributor_profit,
+        'manufacturer_profit': manufacturer_profit,
+        'retailer_profit': retailer_profit,
+        'total_profit': total_profit,
+    }
+
+# Taipy GUI setup
 gui = Gui(page="""
 # Cost Calculator
 
@@ -32,68 +65,42 @@ gui = Gui(page="""
 * Wholesale Markup (%): <|wholesale_markup|>
 * Retail Markup (%): <|retail_markup|>
 * Total Ounces: <|total_ounces|>
-* Ounces per Bottle: <|ounces_per_bottle|>
-* Bottles: <|bottles|>
-* CBD Options: <|cbd_choice|>
 
 ## Actions
 <|Calculate|button|on_action=calculate|>
 
 ## Results
 * Total Cost: <|total_cost|>
-* Cost per Ounce Manufacturing: <|cost_per_ounce_manufacturing|>
-* Cost per Ounce Distribution: <|cost_per_ounce_distribution|>
-* Total Cost per Ounce: <|total_cost_per_ounce|>
+* Cost per Ounce: <|total_cost_per_ounce|>
 * Wholesale Price: <|wholesale_price|>
 * Retail Price: <|retail_price|>
 * Total Profit: <|total_profit|>
 * Distributor Profit: <|distributor_profit|>
 * Manufacturer Profit: <|manufacturer_profit|>
 * Retailer Profit: <|retailer_profit|>
-* Distributor Profit per Ounce: <|distributor_profit_per_ounce|>
-* Manufacturer Profit per Ounce: <|manufacturer_profit_per_ounce|>
-* Retailer Profit per Ounce: <|retailer_profit_per_ounce|>
 """)
 
-# Define the calculate function
 def calculate(state):
-    # Get the input values from the state
-    input_values['cost_product1'] = state.cost_product1
-    input_values['cost_product2'] = state.cost_product2
-    input_values['cost_product3'] = state.cost_product3
-    input_values['labor_cost_per_hour'] = state.labor_cost_per_hour
-    input_values['cost_cbd_per_ounce'] = state.cost_cbd_per_ounce
-    input_values['wholesale_markup'] = state.wholesale_markup
-    input_values['retail_markup'] = state.retail_markup
-    input_values['total_ounces'] = state.total_ounces
-    input_values['ounces_per_bottle'] = state.ounces_per_bottle
-    input_values['bottles'] = state.bottles
-    input_values['cbd_choice'] = state.cbd_choice
+    # Extract input values from the state
+    input_values = {
+        'cost_product1': state.cost_product1,
+        'cost_product2': state.cost_product2,
+        'cost_product3': state.cost_product3,
+        'labor_cost_per_hour': state.labor_cost_per_hour,
+        'cost_cbd_per_ounce': state.cost_cbd_per_ounce,
+        'wholesale_markup': state.wholesale_markup,
+        'retail_markup': state.retail_markup,
+        'total_ounces': state.total_ounces,
+    }
 
-    # Calculate the total cost
-    calculator = ProductCostCalculator(
-        input_values['cost_product1'],
-        input_values['cost_product2'],
-        input_values['cost_product3'],
-        input_values['labor_cost_per_hour'],
-        input_values['cost_cbd_per_ounce']
-    )
-    result = calculator.calculate_cost_per_ounce(
-        input_values['cbd_choice'] == '1', input_values['total_ounces'])
+    # Calculate costs and profits
+    calculator = ProductCostCalculator(**input_values)
+    result = calculator.calculate_cost_per_ounce(cbd_calculation=True, total_ounces=input_values['total_ounces'])
 
-    # Calculate the wholesale and retail prices
-    wholesale_price, retail_price, profit = calculate_prices_and_profits(
-        result, input_values['wholesale_markup'], input_values['retail_markup'], input_values['total_ounces'])
+    wholesale_price, retail_price, profit = calculate_prices_and_profits(result, input_values['wholesale_markup'], input_values['retail_markup'], input_values['total_ounces'])
 
-    # Calculate the profit per ounce
-    distributor_profit_per_ounce = profit['distributor_profit'] / input_values['total_ounces']
-    manufacturer_profit_per_ounce = profit['manufacturer_profit'] / input_values['total_ounces']
-    retailer_profit_per_ounce = profit['retailer_profit'] / input_values['total_ounces']
-
-    # Update the state with the results
+    # Update state with results
     state.total_cost = result['total_cost']
-    state.cost_per_ounce_manufacturing = result['cost_per_ounce_manufacturing']
-    state.cost_per_ounce_distribution = result['cost_per_ounce_distribution']
     state.total_cost_per_ounce = result['total_cost_per_ounce']
     state.wholesale_price = wholesale_price
     state.retail_price = retail_price
@@ -101,22 +108,6 @@ def calculate(state):
     state.distributor_profit = profit['distributor_profit']
     state.manufacturer_profit = profit['manufacturer_profit']
     state.retailer_profit = profit['retailer_profit']
-    state.distributor_profit_per_ounce = distributor_profit_per_ounce
-    state.manufacturer_profit_per_ounce = manufacturer_profit_per_ounce
-    state.retailer_profit_per_ounce = retailer_profit_per_ounce
 
-# Create a Flask app to serve the PDF
-app = Flask(__name__)
-CORS(app)
-
-@app.route("/")
-def index():
-    return "Welcome to the Cost Calculator!"
-
-# Run the Taipy GUI
-if __name__ == '__main__':
-    import threading
-    # Start Flask server in a separate thread
-    threading.Thread(target=lambda: app.run(host="0.0.0.0", port=5001)).start()
-    port = int(os.environ.get("PORT", 5000))
-    gui.run(host="0.0.0.0", port=port)
+if __name__ == "__main__":
+    gui.run(host="0.0.0.0", port=5000)
