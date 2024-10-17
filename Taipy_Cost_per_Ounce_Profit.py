@@ -62,12 +62,15 @@ gui = Gui(page="""
 * Cost of Product 3: <|cost_product3|>
 * Labor Cost per Hour: <|labor_cost_per_hour|>
 * Cost of CBD per Ounce: <|cost_cbd_per_ounce|>
-* Wholesale Markup (%): <|wholesale_markup|>
-* Retail Markup (%): <|retail_markup|>
 * Total Ounces: <|total_ounces|>
+
+## CBD Options
+* Calculate cost per ounce with CBD: <|cbd_with|>
+* Calculate cost per ounce without CBD: <|cbd_without|>
 
 ## Actions
 <|Calculate|button|on_action=calculate|>
+<|Modify Input Values|button|on_action=modify_input_values|>
 
 ## Results
 * Total Cost: <|total_cost|>
@@ -88,16 +91,20 @@ def calculate(state):
         'cost_product3': state.cost_product3,
         'labor_cost_per_hour': state.labor_cost_per_hour,
         'cost_cbd_per_ounce': state.cost_cbd_per_ounce,
-        'wholesale_markup': state.wholesale_markup,
-        'retail_markup': state.retail_markup,
         'total_ounces': state.total_ounces,
     }
 
+    # Determine if CBD should be included in the calculation
+    cbd_calculation = state.cbd_with
+
     # Calculate costs and profits
     calculator = ProductCostCalculator(**input_values)
-    result = calculator.calculate_cost_per_ounce(cbd_calculation=True, total_ounces=input_values['total_ounces'])
+    result = calculator.calculate_cost_per_ounce(cbd_calculation=cbd_calculation, total_ounces=input_values['total_ounces'])
 
-    wholesale_price, retail_price, profit = calculate_prices_and_profits(result, input_values['wholesale_markup'], input_values['retail_markup'], input_values['total_ounces'])
+    wholesale_markup = 20  # Assuming a default wholesale markup of 20%
+    retail_markup = 30  # Assuming a default retail markup of 30%
+
+    wholesale_price, retail_price, profit = calculate_prices_and_profits(result, wholesale_markup, retail_markup, input_values['total_ounces'])
 
     # Update state with results
     state.total_cost = result['total_cost']
@@ -108,6 +115,15 @@ def calculate(state):
     state.distributor_profit = profit['distributor_profit']
     state.manufacturer_profit = profit['manufacturer_profit']
     state.retailer_profit = profit['retailer_profit']
+
+def modify_input_values(state):
+    # This function allows users to modify input values
+    state.cost_product1 = float(input("Enter new value for Cost of Product 1: "))
+    state.cost_product2 = float(input("Enter new value for Cost of Product 2: "))
+    state.cost_product3 = float(input("Enter new value for Cost of Product 3: "))
+    state.labor_cost_per_hour = float(input("Enter new value for Labor Cost per Hour: "))
+    state.cost_cbd_per_ounce = float(input("Enter new value for Cost of CBD per Ounce: "))
+    state.total_ounces = float(input("Enter new value for Total Ounces: "))
 
 if __name__ == "__main__":
     gui.run(host="0.0.0.0", port=5000)
