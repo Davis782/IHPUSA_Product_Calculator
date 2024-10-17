@@ -1,5 +1,5 @@
 import taipy as tp
-from taipy import Gui
+from taipy.gui import Gui
 
 # Define the input values as a state variable
 input_values = {
@@ -34,7 +34,7 @@ gui = Gui(page="""
 * CBD Options: <|cbd_choice|>
 
 ## Actions
-<|Calculate|>
+<|Calculate|button|on_action=calculate|>
 """)
 
 # Define the calculate function
@@ -88,9 +88,6 @@ def calculate(state):
         'manufacturer_profit_per_ounce': manufacturer_profit_per_ounce,
         'retailer_profit_per_ounce': retailer_profit_per_ounce
     }
-
-# Add the calculate function to the GUI
-gui.add_button("Calculate", calculate)
 
 # Define the output fields
 gui.add_output_field("total_cost", "Total Cost")
