@@ -123,12 +123,12 @@ def main():
         st.write(f"Total Distribution Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_distribution']:.2f}")
 
         # Markup inputs
-        st.session_state.wholesale_markup = st.number_input("Wholesale Markup (%)", value=st.session_state.wholesale_markup, key="wholesale_markup")
-        st.session_state.retail_markup = st.number_input("Retail Markup (%)", value=st.session_state.retail_markup, key="retail_markup")
+        wholesale_markup = st.number_input("Wholesale Markup (%)", value=st.session_state.wholesale_markup, key="wholesale_markup")
+        retail_markup = st.number_input("Retail Markup (%)", value=st.session_state.retail_markup, key="retail_markup")
 
         # Calculate prices and profits
         profit = calculate_prices_and_profits(
-            result, st.session_state.wholesale_markup, st.session_state.retail_markup, total_ounces, ounces_per_bottle)
+            result, wholesale_markup, retail_markup, total_ounces, ounces_per_bottle)
 
         # Display profit report
         st.subheader("Profit Report")
