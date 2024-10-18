@@ -23,11 +23,9 @@ class ProductCostCalculator:
         total_cost_distribution = total_labor_cost + total_cost_cbd
 
         total_cost_per_ounce = (total_cost_manufacturing + total_cost_distribution) / total_ounces
-        total_cost_per_bottle = total_cost_per_ounce * 2  # Assuming 2 ounces per bottle
 
         return {
             'total_cost_per_ounce': total_cost_per_ounce,
-            'total_cost_per_bottle': total_cost_per_bottle,
             'total_cost': total_cost_manufacturing + total_cost_distribution,
             'total_cost_product1': total_cost_product1,
             'total_cost_product2': total_cost_product2,
@@ -38,17 +36,17 @@ class ProductCostCalculator:
             'total_cost_distribution': total_cost_distribution,
         }
 
-def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces):
+def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces, ounces_per_bottle):
     wholesale_price_per_ounce = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
     retail_price_per_ounce = wholesale_price_per_ounce * (1 + retail_markup / 100)
 
-    wholesale_price_per_bottle = wholesale_price_per_ounce * 2  # Assuming 2 ounces per bottle
-    retail_price_per_bottle = retail_price_per_ounce * 2  # Assuming 2 ounces per bottle
+    wholesale_price_per_bottle = wholesale_price_per_ounce * ounces_per_bottle  # Dynamic based on ounces per bottle
+    retail_price_per_bottle = retail_price_per_ounce * ounces_per_bottle  # Dynamic based on ounces per bottle
 
-    total_profit = (retail_price_per_bottle * (total_ounces / 2)) - result['total_cost']  # Total bottles = total ounces / 2
+    total_profit = (retail_price_per_bottle * (total_ounces / ounces_per_bottle)) - result['total_cost']  # Total bottles = total ounces / ounces per bottle
     distributor_profit = total_profit / 2
     manufacturer_profit = total_profit / 2
-    retailer_profit = (retail_price_per_bottle - wholesale_price_per_bottle) * (total_ounces / 2)
+    retailer_profit = (retail_price_per_bottle - wholesale_price_per_bottle) * (total_ounces / ounces_per_bottle)
 
     return {
         'wholesale_price_per_bottle': wholesale_price_per_bottle,
@@ -111,7 +109,12 @@ def main():
         st.subheader("Calculation Results")
         st.write(f"Total cost to produce {total_ounces:.1f} ounces: ${result['total_cost']:.2f}")
         st.write(f"Cost per ounce: ${result['total_cost_per_ounce']:.2f}")
-        st.write(f"Cost per bottle (2 ounces): ${result['total_cost_per_bottle']:.2f}")
+
+        # Calculate cost per bottle dynamically
+        ounces_per_bottle = st.number_input("Enter the number of ounces per bottle:", value=2)  # Ensure this is accessible
+        total_cost_per_bottle = result['total_cost_per_ounce'] * ounces_per_bottle
+        st.write(f"Cost per bottle ({ounces_per_bottle} ounces): ${total_cost_per_bottle:.2f}")
+
         st.write(f"Total Manufacturing Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_manufacturing']:.2f}")
         st.write(f"Total Distribution Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_distribution']:.2f}")
 
@@ -121,7 +124,7 @@ def main():
 
         # Calculate prices and profits
         profit = calculate_prices_and_profits(
-            result, st.session_state.wholesale_markup, st.session_state.retail_markup, total_ounces)
+            result, st.session_state.wholesale_markup, st.session_state.retail_markup, total_ounces, ounces_per_bottle)
 
         # Display profit report
         st.subheader("Profit Report")
