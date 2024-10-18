@@ -37,11 +37,12 @@ class ProductCostCalculator:
         }
 
 def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces, ounces_per_bottle):
-    wholesale_price_per_ounce = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
-    retail_price_per_ounce = wholesale_price_per_ounce * (1 + retail_markup / 100)
+    # Calculate total cost per bottle
+    total_cost_per_bottle = result['total_cost'] / (total_ounces / ounces_per_bottle)
 
-    wholesale_price_per_bottle = wholesale_price_per_ounce * ounces_per_bottle  # Dynamic based on ounces per bottle
-    retail_price_per_bottle = retail_price_per_ounce * ounces_per_bottle  # Dynamic based on ounces per bottle
+    # Calculate wholesale and retail prices per bottle
+    wholesale_price_per_bottle = total_cost_per_bottle * (1 + wholesale_markup / 100)
+    retail_price_per_bottle = wholesale_price_per_bottle * (1 + retail_markup / 100)
 
     total_profit = (retail_price_per_bottle * (total_ounces / ounces_per_bottle)) - result['total_cost']  # Total bottles = total ounces / ounces per bottle
     distributor_profit = total_profit / 2
@@ -49,6 +50,7 @@ def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_
     retailer_profit = (retail_price_per_bottle - wholesale_price_per_bottle) * (total_ounces / ounces_per_bottle)
 
     return {
+        'total_cost_per_bottle': total_cost_per_bottle,
         'wholesale_price_per_bottle': wholesale_price_per_bottle,
         'retail_price_per_bottle': retail_price_per_bottle,
         'distributor_profit': distributor_profit,
@@ -112,7 +114,7 @@ def main():
 
         # Calculate cost per bottle dynamically
         ounces_per_bottle = st.number_input("Enter the number of ounces per bottle:", value=2)  # Ensure this is accessible
-        total_cost_per_bottle = result['total_cost_per_ounce'] * ounces_per_bottle
+        total_cost_per_bottle = result['total_cost'] / (total_ounces / ounces_per_bottle)
         st.write(f"Cost per bottle ({ounces_per_bottle} ounces): ${total_cost_per_bottle:.2f}")
 
         st.write(f"Total Manufacturing Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_manufacturing']:.2f}")
@@ -128,6 +130,7 @@ def main():
 
         # Display profit report
         st.subheader("Profit Report")
+        st.write(f"Total cost per bottle: ${profit['total_cost_per_bottle']:.2f}")  # Added total cost per bottle
         st.write(f"Wholesale price per bottle: ${profit['wholesale_price_per_bottle']:.2f}")
         st.write(f"Retail price per bottle: ${profit['retail_price_per_bottle']:.2f}")
         st.write(f"Total profit: ${profit['total_profit']:.2f}")
