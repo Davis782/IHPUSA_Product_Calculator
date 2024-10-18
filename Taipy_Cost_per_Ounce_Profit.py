@@ -77,6 +77,12 @@ def main():
     # CBD Options
     cbd_choice = st.radio("Calculate cost per ounce with CBD?", ("Yes", "No"))
 
+    # Initialize session state for calculations
+    if 'result' not in st.session_state:
+        st.session_state.result = None
+        st.session_state.wholesale_markup = 20.0
+        st.session_state.retail_markup = 30.0
+
     # Calculate button
     if st.button("Calculate"):
         calculator = ProductCostCalculator(
@@ -87,8 +93,12 @@ def main():
             cost_cbd_per_ounce
         )
 
-        result = calculator.calculate_cost_per_ounce(
+        st.session_state.result = calculator.calculate_cost_per_ounce(
             cbd_choice == "Yes", total_ounces)
+
+    # Display results if available
+    if st.session_state.result is not None:
+        result = st.session_state.result
 
         # Display results
         st.subheader("Calculation Results")
@@ -98,12 +108,12 @@ def main():
         st.write(f"Total Distribution Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_distribution']:.2f}")
 
         # Markup inputs
-        wholesale_markup = st.number_input("Wholesale Markup (%)", value=20.0)
-        retail_markup = st.number_input("Retail Markup (%)", value=30.0)
+        st.session_state.wholesale_markup = st.number_input("Wholesale Markup (%)", value=st.session_state.wholesale_markup)
+        st.session_state.retail_markup = st.number_input("Retail Markup (%)", value=st.session_state.retail_markup)
 
         # Calculate prices and profits
         wholesale_price, retail_price, profit = calculate_prices_and_profits(
-            result, wholesale_markup, retail_markup, total_ounces)
+            result, st.session_state.wholesale_markup, st.session_state.retail_markup, total_ounces)
 
         # Display profit report
         st.subheader("Profit Report")
