@@ -23,9 +23,11 @@ class ProductCostCalculator:
         total_cost_distribution = total_labor_cost + total_cost_cbd
 
         total_cost_per_ounce = (total_cost_manufacturing + total_cost_distribution) / total_ounces
+        total_cost_per_bottle = total_cost_per_ounce * 2  # Assuming 2 ounces per bottle
 
         return {
             'total_cost_per_ounce': total_cost_per_ounce,
+            'total_cost_per_bottle': total_cost_per_bottle,
             'total_cost': total_cost_manufacturing + total_cost_distribution,
             'total_cost_product1': total_cost_product1,
             'total_cost_product2': total_cost_product2,
@@ -37,15 +39,20 @@ class ProductCostCalculator:
         }
 
 def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces):
-    wholesale_price = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
-    retail_price = wholesale_price * (1 + retail_markup / 100)
-    total_profit = (retail_price * total_ounces) - result['total_cost']
+    wholesale_price_per_ounce = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
+    retail_price_per_ounce = wholesale_price_per_ounce * (1 + retail_markup / 100)
 
+    wholesale_price_per_bottle = wholesale_price_per_ounce * 2  # Assuming 2 ounces per bottle
+    retail_price_per_bottle = retail_price_per_ounce * 2  # Assuming 2 ounces per bottle
+
+    total_profit = (retail_price_per_bottle * (total_ounces / 2)) - result['total_cost']  # Total bottles = total ounces / 2
     distributor_profit = total_profit / 2
     manufacturer_profit = total_profit / 2
-    retailer_profit = (retail_price - wholesale_price) * total_ounces
+    retailer_profit = (retail_price_per_bottle - wholesale_price_per_bottle) * (total_ounces / 2)
 
-    return wholesale_price, retail_price, {
+    return {
+        'wholesale_price_per_bottle': wholesale_price_per_bottle,
+        'retail_price_per_bottle': retail_price_per_bottle,
         'distributor_profit': distributor_profit,
         'manufacturer_profit': manufacturer_profit,
         'retailer_profit': retailer_profit,
@@ -71,7 +78,7 @@ def main():
         total_ounces = gallons * 128  # 1 gallon = 128 ounces
     else:
         total_bottles = st.number_input("Enter the total number of bottles:", value=1)
-        ounces_per_bottle = st.number_input("Enter the number of ounces per bottle:", value=1)
+        ounces_per_bottle = st.number_input("Enter the number of ounces per bottle:", value=2)  # Default to 2 ounces
         total_ounces = total_bottles * ounces_per_bottle
 
     # CBD Options
@@ -104,6 +111,7 @@ def main():
         st.subheader("Calculation Results")
         st.write(f"Total cost to produce {total_ounces:.1f} ounces: ${result['total_cost']:.2f}")
         st.write(f"Cost per ounce: ${result['total_cost_per_ounce']:.2f}")
+        st.write(f"Cost per bottle (2 ounces): ${result['total_cost_per_bottle']:.2f}")
         st.write(f"Total Manufacturing Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_manufacturing']:.2f}")
         st.write(f"Total Distribution Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_distribution']:.2f}")
 
@@ -112,13 +120,13 @@ def main():
         st.session_state.retail_markup = st.number_input("Retail Markup (%)", value=st.session_state.retail_markup)
 
         # Calculate prices and profits
-        wholesale_price, retail_price, profit = calculate_prices_and_profits(
+        profit = calculate_prices_and_profits(
             result, st.session_state.wholesale_markup, st.session_state.retail_markup, total_ounces)
 
         # Display profit report
         st.subheader("Profit Report")
-        st.write(f"Wholesale price: ${wholesale_price:.2f}")
-        st.write(f"Retail price: ${retail_price:.2f}")
+        st.write(f"Wholesale price per bottle: ${profit['wholesale_price_per_bottle']:.2f}")
+        st.write(f"Retail price per bottle: ${profit['retail_price_per_bottle']:.2f}")
         st.write(f"Total profit: ${profit['total_profit']:.2f}")
         st.write(f"Distributor profit: ${profit['distributor_profit']:.2f}")
         st.write(f"Manufacturer profit: ${profit['manufacturer_profit']:.2f}")
