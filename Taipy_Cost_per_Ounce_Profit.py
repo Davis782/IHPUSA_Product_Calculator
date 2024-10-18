@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 class ProductCostCalculator:
     def __init__(self, cost_product1, cost_product2, cost_product3, labor_cost_per_hour, cost_cbd_per_ounce):
         self.cost_product1 = cost_product1
@@ -20,12 +19,10 @@ class ProductCostCalculator:
 
         total_cost_cbd = total_ounces * self.cost_cbd_per_ounce if cbd_calculation else 0
 
-        total_cost_manufacturing = total_cost_product1 + \
-            total_cost_product2 + total_cost_product3 + total_labor_cost
+        total_cost_manufacturing = total_cost_product1 + total_cost_product2 + total_cost_product3 + total_labor_cost
         total_cost_distribution = total_labor_cost + total_cost_cbd
 
-        total_cost_per_ounce = (
-            total_cost_manufacturing + total_cost_distribution) / total_ounces
+        total_cost_per_ounce = (total_cost_manufacturing + total_cost_distribution) / total_ounces
 
         return {
             'total_cost_per_ounce': total_cost_per_ounce,
@@ -39,10 +36,8 @@ class ProductCostCalculator:
             'total_cost_distribution': total_cost_distribution,
         }
 
-
 def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_ounces):
-    wholesale_price = result['total_cost_per_ounce'] * \
-        (1 + wholesale_markup / 100)
+    wholesale_price = result['total_cost_per_ounce'] * (1 + wholesale_markup / 100)
     retail_price = wholesale_price * (1 + retail_markup / 100)
     total_profit = (retail_price * total_ounces) - result['total_cost']
 
@@ -58,8 +53,6 @@ def calculate_prices_and_profits(result, wholesale_markup, retail_markup, total_
     }
 
 # Streamlit app
-
-
 def main():
     st.title("Product Cost Calculator")
 
@@ -67,11 +60,19 @@ def main():
     cost_product1 = st.number_input("Cost of Product 1 ($)", value=5.0)
     cost_product2 = st.number_input("Cost of Product 2 ($)", value=6.0)
     cost_product3 = st.number_input("Cost of Product 3 ($)", value=9.0)
-    labor_cost_per_hour = st.number_input(
-        "Labor Cost per Hour ($)", value=15.0)
-    cost_cbd_per_ounce = st.number_input(
-        "Cost of CBD per Ounce ($)", value=0.326)
-    total_ounces = st.number_input("Total Ounces", value=128)
+    labor_cost_per_hour = st.number_input("Labor Cost per Hour ($)", value=15.0)
+    cost_cbd_per_ounce = st.number_input("Cost of CBD per Ounce ($)", value=0.326)
+
+    # Menu for selecting calculation method
+    calculation_method = st.selectbox("Select Calculation Method:", ["Calculate based on Gallons", "Calculate based on Total Bottles"])
+
+    if calculation_method == "Calculate based on Gallons":
+        gallons = st.number_input("Enter the number of gallons:", value=1.0)
+        total_ounces = gallons * 128  # 1 gallon = 128 ounces
+    else:
+        total_bottles = st.number_input("Enter the total number of bottles:", value=1)
+        ounces_per_bottle = st.number_input("Enter the number of ounces per bottle:", value=1)
+        total_ounces = total_bottles * ounces_per_bottle
 
     # CBD Options
     cbd_choice = st.radio("Calculate cost per ounce with CBD?", ("Yes", "No"))
@@ -91,13 +92,10 @@ def main():
 
         # Display results
         st.subheader("Calculation Results")
-        st.write(
-            f"Total cost to produce {total_ounces:.1f} ounces: ${result['total_cost']:.2f}")
+        st.write(f"Total cost to produce {total_ounces:.1f} ounces: ${result['total_cost']:.2f}")
         st.write(f"Cost per ounce: ${result['total_cost_per_ounce']:.2f}")
-        st.write(
-            f"Total Manufacturing Dept cost: ${result['total_cost_manufacturing']:.2f}")
-        st.write(
-            f"Total Distribution Dept cost: ${result['total_cost_distribution']:.2f}")
+        st.write(f"Total Manufacturing Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_manufacturing']:.2f}")
+        st.write(f"Total Distribution Dept cost for {total_ounces:.1f} ounces: ${result['total_cost_distribution']:.2f}")
 
         # Markup inputs
         wholesale_markup = st.number_input("Wholesale Markup (%)", value=20.0)
@@ -115,7 +113,6 @@ def main():
         st.write(f"Distributor profit: ${profit['distributor_profit']:.2f}")
         st.write(f"Manufacturer profit: ${profit['manufacturer_profit']:.2f}")
         st.write(f"Retailer profit: ${profit['retailer_profit']:.2f}")
-
 
 if __name__ == "__main__":
     main()
