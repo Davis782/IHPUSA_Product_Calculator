@@ -70,8 +70,8 @@ def main():
     labor_cost_per_hour = st.number_input("Labor Cost per Hour ($)", value=15.0)
     cost_cbd_per_ounce = st.number_input("Cost of CBD per Ounce ($)", value=0.326)
 
-    # Menu for selecting calculation method
-    calculation_method = st.selectbox("Select Calculation Method:", ["Calculate based on Gallons", "Calculate based on Total Bottles"])
+    # Toggle for selecting calculation method
+    calculation_method = st.radio("Select Calculation Method:", ["Calculate based on Gallons", "Calculate based on Total Bottles"])
 
     if calculation_method == "Calculate based on Gallons":
         gallons = st.number_input("Enter the number of gallons:", value=1.0)
