@@ -1,4 +1,2 @@
 streamlit
-taipy>=<latest_version>
-qrcode
-Pillow
+
